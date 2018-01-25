@@ -9,6 +9,19 @@
 > cd mbta
 > npm install
 ```
+
+### Run
 ```
 > npm start
 ```
+
+### Build Documentation
+
+```
+> npm run docs
+```
+
+### View Documentation
+
+```
+> open ./doc/
