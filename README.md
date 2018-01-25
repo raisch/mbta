@@ -23,5 +23,12 @@
 
 ### View Documentation
 
+#### OSX
+
 ```
-> open ./doc/
+> open ./out/index.html
+```
+
+#### Other OSen
+
+Open browser of choice on `./out/index.html`
