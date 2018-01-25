@@ -1,16 +1,18 @@
 {
   "name": "mbta",
   "version": "1.0.0",
-  "description": "",
+  "description": "programming task for mbta",
   "main": "index.js",
   "scripts": {
+    "start": "node ./src/feeder.js",
+    "docs": "jsdoc ./src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/raisch/mbta.git"
   },
-  "author": "",
+  "author": "Rob Raisch <raisch@gmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/raisch/mbta/issues"
@@ -18,6 +20,7 @@
   "homepage": "https://github.com/raisch/mbta#readme",
   "dependencies": {
     "axios": "^0.17.1",
-    "csv-parse": "^2.0.0"
+    "csv-parse": "^2.0.0",
+    "dateformat": "^3.0.2"
   }
 }
