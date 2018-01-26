@@ -2,6 +2,9 @@
 
 ## Task: Replicate North Station Train Announcement Board
 
+### Requirements
+- node v8.7.0 or above
+
 ### Installation
 
 ```
@@ -10,12 +13,19 @@
 > npm install
 ```
 
+### Test
+
+```
+> npm test
+```
+
 ### Run
+
 ```
 > npm start
 ```
 
-### Build Documentation
+### Build API Documentation
 
 ```
 > npm run docs
@@ -31,4 +41,4 @@
 
 #### Other OSen
 
-Open browser of choice on `./out/index.html`
+Open `./out/index.html` using browser of choice.
