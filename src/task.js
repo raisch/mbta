@@ -5,66 +5,25 @@
 const fs = require('fs')
 const path = require('path')
 const assert = require('assert')
-const _ = require('lodash')
 const dateFormat = require('dateformat')
 const axios = require('axios')
 const parser = require('csv-parse')
 
-require(path.resolve(__dirname, './mixins')) // extends lodash - side-effect!
+const _ = require(path.resolve(__dirname, './lodashEx')) // lodash with mixins
 
-/**
- * Url from which to retrieve data.
- * @type {String}
- */
-const DATA_URL = 'http://developer.mbta.com/lib/gtrtfs/Departures.csv'
-
-/**
- * Origin used to filter records for a specific station.
- * @type {TripOrigin}
- */
-const TARGET_ORIGIN = 'North Station'
-
-/**
- * Columns config for display
- * @type {Array}
- */
-const DISPLAY_COLUMNS = [
-  {
-    title: 'TIME',
-    value: rec => _.get(rec, 'ScheduledTime', 'TBD'),
-    length: 10
-  },
-  {
-    title: 'DESTINATION',
-    value: rec => _.get(rec, 'Destination', 'TBD'),
-    length: 20
-  },
-  {
-    title: 'TRIP#',
-    value: (rec) => _.get(rec, 'Trip', 'TBD'),
-    length: 8
-  },
-  {
-    title: 'TRACK#',
-    value: (rec) => _.get(rec, 'Track', 'TBD'),
-    length: 8
-  },
-  {
-    title: 'STATUS',
-    value: (rec) => _.get(rec, 'Status', 'TBD'),
-    length: 14
-  }
-]
+const {DATA_URL, TARGET_ORIGIN, DISPLAY_COLUMNS} = require(path.resolve(__dirname, './config'))
 
 /**
  * Converts a numeric timestamp to a date.
  * @param  {Number} ts - milliseconds since January 1, 1970 (midnight UTC/GMT)
  * @return {Date}
  */
-const timestampToDate = (ts) => new Date(Number(ts) * 1000)
+const timestampToDate = (ts) => {
+  return new Date(Number(ts) * 1000)
+}
 
 /**
- * Iterate over an array of Trips and convert property names to camelCase and timestamp fields to strings.
+ * Iterate over an array of Trips and convert timestamp fields to formatted time strings.
  * @param  {Array.<Trip>} trips - current active trips
  * @param  {Array.<Fieldname>} fieldnames=('timeStamp'|'scheduledTime') - timestamp fieldnames
  * @return {Array.<Trip>}
@@ -85,7 +44,7 @@ const convertTimestamps = (trips, fieldnames = ['TimeStamp', 'ScheduledTime']) =
 /**
  * Filters trips by trip.origin
  * @param  {Array.<Trip>} trips
- * @param  {string} [origin=TARGET_ORIGIN]
+ * @param  {TripOrigin} [origin='North Station']
  * @return {Array.<Trip>}
  */
 const filterByOrigin = (trips, origin = TARGET_ORIGIN) => _.filter(trips, trip => _.get(trip, 'Origin') === origin)
@@ -96,8 +55,9 @@ const filterByOrigin = (trips, origin = TARGET_ORIGIN) => _.filter(trips, trip =
  * @return {Trip}
  */
 const normalizeTripTrack = trip => {
+  assert(_.isPlainObject(trip), 'trip must be an object')
   let result = _.merge({}, trip)
-  if (!_.get(result, 'Track', '')) {
+  if (!_.get(result, 'Track')) {
     _.set(result, 'Track', 'TBD')
   }
   return result
@@ -106,7 +66,7 @@ const normalizeTripTrack = trip => {
 /**
  * Converts a CSV to an array of Trip objects
  * @param  {string} csv - comma-separated values
- * @return {Array.<Trip>}
+ * @return {Promise} Promise of Trip[]
  * @async
  */
 const csvToObject = (csv) => {
@@ -125,7 +85,7 @@ const csvToObject = (csv) => {
 /**
  * Retrieves data as csv from url.
  * @param  {Url} url [description]
- * @return {string}
+ * @return {Promise} Promise of String
  * @async
  */
 async function getRemoteData (url) {
@@ -141,7 +101,7 @@ async function getRemoteData (url) {
 /**
  * Retrieves csv, converts it to an Object, filters out records matching origin, and converts timestamps into local time strings.
  * @param  {Url} [url=DATA_URL]
- * @return {Array.<Trip>}
+ * @return {Promise} Promise of Trip[]
  * @async
  */
 async function getTrips (url = DATA_URL) {
@@ -154,17 +114,30 @@ async function getTrips (url = DATA_URL) {
   return result
 }
 
-module.exports = getTrips
-
-let header = 'CARRIER   '
-DISPLAY_COLUMNS.forEach(col => header += col.title.padEnd(col.length || 0, ' '))
-
+/**
+ * Formats a trip based using DISPLAY_COLUMNS
+ * @param  {Trip} trip
+ * @return {string}
+ */
 const formatTrip = trip => {
   let res = 'MBTA      '
   DISPLAY_COLUMNS.forEach(col => {
-    res += (''+col.value(trip)).padEnd(col.length || 0, ' ')
+    res += ('' + col.value(trip)).padEnd(col.length || 0, ' ')
   })
   return res
+}
+
+/**
+ * Returns result header
+ * @return {string}
+ */
+const buildHeader = () => {
+  let result = 'CARRIER   '
+  DISPLAY_COLUMNS.forEach(col => {
+    assert(_.isNonEmptyString(col.title))
+    result += col.title.padEnd(Number(col.length || 0), ' ')
+  })
+  return result
 }
 
 /**
@@ -172,6 +145,13 @@ const formatTrip = trip => {
  * @return {undefined}
  */
 function run () {
+  const header = buildHeader()
+  // let header = 'CARRIER   '
+  // DISPLAY_COLUMNS.forEach(col => {
+  //   assert(_.isNonEmptyString(col.title))
+  //   header += col.title.padEnd(Number(col.length || 0), ' '))
+  // })
+  // retrieve, mutate and display
   getTrips()
     .then(trips => {
       console.log(header)
@@ -179,7 +159,18 @@ function run () {
     })
 }
 
-run()
+module.exports = {
+  timestampToDate,
+  convertTimestamps,
+  filterByOrigin,
+  normalizeTripTrack,
+  csvToObject,
+  getRemoteData,
+  getTrips,
+  formatTrip,
+  buildHeader,
+  run
+}
 
   /**
    * A train trip.
