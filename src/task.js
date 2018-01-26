@@ -1,7 +1,8 @@
 'use strict'
 /* eslint-env node, es6 */
 
-/* @module */
+/** @module */
+
 const fs = require('fs')
 const path = require('path')
 const assert = require('assert')
@@ -128,7 +129,7 @@ const formatTrip = trip => {
 }
 
 /**
- * Returns result header using DISPLAY_COLUMNS
+ * Returns printable header using DISPLAY_COLUMNS
  * @return {string}
  */
 const buildHeader = () => {
@@ -141,8 +142,7 @@ const buildHeader = () => {
 }
 
 /**
- * Gets current trips, formats and prints them.
- * @return {undefined}
+ * Gets current trips, formats and prints them to console.
  */
 function run () {
   const header = buildHeader()

@@ -1,6 +1,8 @@
 'use strict';
 /* eslint-env node, es6 */
 
+/** @module */
+
 const path = require('path')
 const _ = require(path.resolve(__dirname, './lodashEx'))
 
