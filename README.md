@@ -31,7 +31,7 @@
 > npm run docs
 ```
 
-### View Documentation
+### View API Documentation
 
 #### OSX
 
