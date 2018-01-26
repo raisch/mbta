@@ -1,7 +1,7 @@
 'use strict'
 /* eslint-env node, es6 */
 
-/** @module */
+/* @module */
 const fs = require('fs')
 const path = require('path')
 const assert = require('assert')
@@ -9,7 +9,7 @@ const dateFormat = require('dateformat')
 const axios = require('axios')
 const parser = require('csv-parse')
 
-const _ = require(path.resolve(__dirname, './lodashEx')) // lodash with mixins
+const _ = require(path.resolve(__dirname, './lodashEx')) // lodash with custom mixins
 
 const {DATA_URL, TARGET_ORIGIN, DISPLAY_COLUMNS} = require(path.resolve(__dirname, './config'))
 
@@ -115,7 +115,7 @@ async function getTrips (url = DATA_URL) {
 }
 
 /**
- * Formats a trip based using DISPLAY_COLUMNS
+ * Formats a trip using DISPLAY_COLUMNS
  * @param  {Trip} trip
  * @return {string}
  */
@@ -128,7 +128,7 @@ const formatTrip = trip => {
 }
 
 /**
- * Returns result header
+ * Returns result header using DISPLAY_COLUMNS
  * @return {string}
  */
 const buildHeader = () => {
@@ -146,12 +146,7 @@ const buildHeader = () => {
  */
 function run () {
   const header = buildHeader()
-  // let header = 'CARRIER   '
-  // DISPLAY_COLUMNS.forEach(col => {
-  //   assert(_.isNonEmptyString(col.title))
-  //   header += col.title.padEnd(Number(col.length || 0), ' '))
-  // })
-  // retrieve, mutate and display
+  // retrieve, mutate and print
   getTrips()
     .then(trips => {
       console.log(header)
