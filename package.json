@@ -4,9 +4,9 @@
   "description": "programming task for mbta",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/feeder.js",
+    "start": "node ./index.js",
     "docs": "jsdoc ./src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "nyc mocha ./tests/*"
   },
   "repository": {
     "type": "git",
@@ -22,5 +22,11 @@
     "axios": "^0.17.1",
     "csv-parse": "^2.0.0",
     "dateformat": "^3.0.2"
+  },
+  "devDependencies": {
+    "chai": "^4.1.2",
+    "chai-as-promised": "^7.1.1",
+    "mocha": "^5.0.0",
+    "nyc": "^11.4.1"
   }
 }
